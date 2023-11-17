@@ -177,6 +177,19 @@ typedef struct _expectedValues
         }
      */
 
+// have to play games with data types to get floats to be passed in r0 and r1
+// otherwise, assy needs to use VMOV instructions to move from s registers
+// to r registers
+// More modern C standards support these conversions, but I don't think
+// the MPLABS compiler does. At least, I couldn't make it work. --VB
+uint32_t reinterpret_float_to_uint(float f);
+
+// Allows easy conversion of a bit pattern to its equivalent float value
+// More modern C standards support these conversions, but I don't think
+// the MPLABS compiler does. At least, I couldn't make it work. --VB
+float reinterpret_uint_to_float(uint32_t ui);
+
+
 void calcExpectedValues(
         float input, // test number
         expectedValues *e);   // ptr to struct where values will be stored

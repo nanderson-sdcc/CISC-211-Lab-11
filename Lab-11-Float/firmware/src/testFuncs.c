@@ -143,7 +143,7 @@ extern uint32_t nanValue;
 // to r registers
 // More modern C standards support these conversions, but I don't think
 // the MPLABS compiler does. At least, I couldn't make it work. --VB
-static uint32_t reinterpret_float_to_uint(float f)
+uint32_t reinterpret_float_to_uint(float f)
 {
     float *pf = &f;
     void * pv = (void *) pf;
@@ -151,19 +151,19 @@ static uint32_t reinterpret_float_to_uint(float f)
     return *pi;
 }
 
-#if 0
+// #if 0
 
 // Allows easy conversion of a bit pattern to its equivalent float value
 // More modern C standards support these conversions, but I don't think
 // the MPLABS compiler does. At least, I couldn't make it work. --VB
-static float reinterpret_uint_to_float(uint32_t ui)
+float reinterpret_uint_to_float(uint32_t ui)
 {
     uint32_t *pu = &ui;
     void * pv = (void *) pu;
     float * pf = (float *) pv;
     return *pf;
 }
-#endif
+// #endif
 
 // returns true for NaN
 static bool isNan(float inpVal) 

@@ -119,18 +119,31 @@ extern int32_t biasedExp1,biasedExp2,biasedExpMax;
 extern uint32_t nanValue;
 
 
-// have to play games with data types to get floats to be passed in r0 and r1
-// otherwise, assy needs to use VMOV instructions to move from s registers
-// to r registers
-static uint32_t reinterpret_float(float f)
-{
-    float *pf = &f;
-    void * pv = (void *) pf;
-    uint32_t * pi = (uint32_t *) pv;
-    return *pi;
-}
+// Change the value below to 1 if you want to use the debug array
+// Leave it set to 0 if you want to use the array the students were given
+#define USE_DEBUG_TESTCASES 0
 
-static float tc[][2] = {
+#if USE_DEBUG_TESTCASES
+static float tc[][2] = { // Modify these if you want to debug
+    {   1.175503179e-38, 1.10203478208e-38 },
+    {    -0.2,                 -0.1}, 
+    {     1.0,                  2.0}, 
+    {    -3.1,                 -1.2}, 
+    {     NAN,                  1.0}, 
+    {    -1.0,                  NAN}, 
+    {     0.1,                  0.99},  // 
+    {     1.14437421182e-28,   785.066650391},  //
+    { -4000.1,                   0.0,},  // 
+    {    -1.9e-5,               -1.9e-5},  // 
+    {     1.347e10,              2.867e-10},  // 
+    {     1.4e-42,              -3.2e-43}, // subnormals
+    {     -2.4e-42,              2.313e29}, // subnormals
+    {    INFINITY,           NEG_INFINITY},
+    {    NEG_INFINITY,           -6.24},
+    {     1.0,                   0.0}
+};
+#else
+static float tc[][2] = { // DO NOT MODIFY THESE!!!!!
     {     1.0,                  2.0}, 
     {    -3.1,                  -1.2}, 
     {     NAN,                  1.0}, 
@@ -146,6 +159,8 @@ static float tc[][2] = {
     {    NEG_INFINITY,           -6.24},
     {     1.0,                   0.0}
 };
+#endif
+
 #define USING_HW 1
 
 #if USING_HW
@@ -205,11 +220,27 @@ int main ( void )
             
             LED0_Toggle();
             
-            uint32_t ff1 = reinterpret_float(tc[iteration][0]);
-            uint32_t ff2 = reinterpret_float(tc[iteration][1]);
+            // Set to true if you want to force specific values for debugging
+            if (false)
+            {
+                tc[iteration][0] = reinterpret_uint_to_float(0x0080003F);
+                tc[iteration][1] = reinterpret_uint_to_float(0x000FFF3F);
+            }
+            
+            uint32_t ff1 = reinterpret_float_to_uint(tc[iteration][0]);
+            uint32_t ff2 = reinterpret_float_to_uint(tc[iteration][1]);
             
             // Place to store the result of the call to the assy function
             float *max;
+            
+            // Set to true and set the test number if you want to break at
+            // a particular test for debugging purposes.
+            if (false && iteration == 11)
+            {
+                // This is a NO-OP, put here as a convenient place to
+                // set a breakpoint for debugging a specific test case
+                max = (float *) NULL;
+            }
             
             // Make the call to the assembly function
             max = asmFmax(ff1,ff2);
