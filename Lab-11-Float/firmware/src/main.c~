@@ -153,7 +153,6 @@ static float tc[][2] = { // DO NOT MODIFY THESE!!!!!
     { -4000.1,                   0.0,},  // 
     {    -1.9e-5,               -1.9e-5},  // 
     {     1.347e10,              2.867e-10},  // 
-    // PROF NOTE: Check subnormals: they seem to generate 0x00000000 as inputs
     {     1.4e-42,              -3.2e-43}, // subnormals
     {     -2.4e-42,              2.313e29}, // subnormals
     {    INFINITY,           NEG_INFINITY},
