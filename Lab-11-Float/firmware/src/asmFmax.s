@@ -65,7 +65,46 @@ nanValue: .word 0x7FFFFFFF
  .type initVariables,%function
 initVariables:
     /* YOUR initVariables CODE BELOW THIS LINE! Don't forget to push and pop! */
+    PUSH {r4-r11, LR}
 
+    MOV r4, 0
+    
+    LDR r5, =f1
+    STR r4, [r5]
+    LDR r5, =sb1
+    STR r4, [r5]
+    LDR r5, =biasedExp1
+    STR r4, [r5]
+    LDR r5, =exp1
+    STR r4, [r5]
+    LDR r5, =mant1
+    STR r4, [r5]
+
+    LDR r5, =f2
+    STR r4, [r5]
+    LDR r5, =sb2
+    STR r4, [r5]
+    LDR r5, =biasedExp2
+    STR r4, [r5]
+    LDR r5, =exp2
+    STR r4, [r5]
+    LDR r5, =mant2
+    STR r4, [r5]
+
+    LDR r5, =fMax
+    STR r4, [fMax]
+    LDR r5, =signBitMax
+    STR r4, [signBitMax]
+    LDR r5, =biasedExpMax
+    STR r4, [r5]
+    LDR r5, =expMax
+    STR r4, [r5]
+    LDR r5, =mantMax
+    STR r4, [r5]
+
+    POP {r4-r11, LR}
+    MOV PC, LR
+    
     /* YOUR initVariables CODE ABOVE THIS LINE! Don't forget to push and pop! */
 
     
