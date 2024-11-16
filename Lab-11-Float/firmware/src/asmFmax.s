@@ -92,9 +92,9 @@ initVariables:
     STR r4, [r5]
 
     LDR r5, =fMax
-    STR r4, [fMax]
+    STR r4, [r5]
     LDR r5, =signBitMax
-    STR r4, [signBitMax]
+    STR r4, [r5]
     LDR r5, =biasedExpMax
     STR r4, [r5]
     LDR r5, =expMax
@@ -124,11 +124,11 @@ getSignBit:
     PUSH {r4-r11, LR}
     
     /* sign bit is stored in the 31st bit of the register. We will extract the bit using bitwise operators */
-    LDR r4, [r0] @this puts the number to be unpacked in r4
+    LDR r4, [r0] /*this puts the number to be unpacked in r4 */
     MOV r5, 0x8000000
-    AND r6, r4, r5 @this puts the value of the sign bit in r6 as the 31st bit
+    AND r6, r4, r5 /*this puts the value of the sign bit in r6 as the 31st bit */
     CMP r6, 0
-    MOVNE r6, 1 @this puts 1 in r6 if our 31st bit was 1. We don't worry about 0 since the and operation would have produced 0 in r6
+    MOVNE r6, 1 /*this puts 1 in r6 if our 31st bit was 1. We don't worry about 0 since the and operation would have produced 0 in r6 */
 
     STR r6, [r1]
     
@@ -161,6 +161,25 @@ getSignBit:
 .type getExponent,%function
 getExponent:
     /* YOUR getExponent CODE BELOW THIS LINE! Don't forget to push and pop! */
+    PUSH {r4-r11, LR}
+    
+    /* We need to extract bits 23-30. We will do this using an AND operation, then moving
+     the result down to the right side of the register */
+    LDR r4, [r0]
+    MOV r5, 0x7F80000
+    
+    AND r6, r4, r5
+    LSR r6, r6, 23
+    
+    /*At this point, we have our biased exponent in r6. We can load it into 
+     memory, and also subtract the bias to get our unbiased value */
+    STR r6, [r1]
+    SUB r6, r6, 127
+    STR r6, [r2]
+    
+    POP {r4-r11, LR}
+    MOV PC, LR
+    
     
     /* YOUR getExponent CODE ABOVE THIS LINE! Don't forget to push and pop! */
    
