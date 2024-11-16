@@ -101,7 +101,7 @@ initVariables:
     STR r4, [r5]
     LDR r5, =mantMax
     STR r4, [r5]
-
+    
     POP {r4-r11, LR}
     MOV PC, LR
     
@@ -124,7 +124,7 @@ getSignBit:
     PUSH {r4-r11, LR}
     
     /* sign bit is stored in the 31st bit of the register. We will extract the bit using bitwise operators */
-    LDR r4, [r0] /*this puts the number to be unpacked in r4 */
+    LDR r4, [r0] /*this puts the number to be unpacked in r4*/
     MOV r5, 0x8000000
     AND r6, r4, r5 /*this puts the value of the sign bit in r6 as the 31st bit */
     CMP r6, 0
@@ -166,7 +166,7 @@ getExponent:
     /* We need to extract bits 23-30. We will do this using an AND operation, then moving
      the result down to the right side of the register */
     LDR r4, [r0]
-    MOV r5, 0x7F80000
+    MOV r5, 0x7F800000
     
     AND r6, r4, r5
     LSR r6, r6, 23
@@ -174,6 +174,8 @@ getExponent:
     /*At this point, we have our biased exponent in r6. We can load it into 
      memory, and also subtract the bias to get our unbiased value */
     STR r6, [r1]
+    CMP r6, 0
+    MOVEQ r6, -126
     SUB r6, r6, 127
     STR r6, [r2]
     
@@ -198,7 +200,10 @@ getExponent:
 .type getMantissa,%function
 getMantissa:
     /* YOUR getMantissa CODE BELOW THIS LINE! Don't forget to push and pop! */
+    PUSH {r4-r11, LR}
     
+    POP {r4-r11, LR}
+    MOV PC, LR
     /* YOUR getMantissa CODE ABOVE THIS LINE! Don't forget to push and pop! */
    
 
@@ -239,7 +244,43 @@ asmFmax:
      */
 
     /* YOUR asmFmax CODE BELOW THIS LINE! VVVVVVVVVVVVVVVVVVVVV  */
+    PUSH {r4-r11, LR}
     
+    /* First, we set all the values in memory to 0 for a fresh start */
+    BL initVariables
+    
+    /* First, we store the r0 input into f1 and likewise with r1 */
+    LDR r4, =f1
+    STR r0, [r4]
+    LDR r5, =f2
+    STR r1, [r5]
+    
+    /* Since we have functions setup already we simply set the r0-r3 to 
+    the correct inputs then call the functions. */
+    /*Sign bit function first */
+    LDR r0, =f1
+    LDR r1, =sb1
+    BL getSignBit
+    
+    LDR r0, =f2
+    LDR r1, =sb1
+    BL getSignBit
+    
+    /* Now the get exponent function */
+    LDR r0, =f1
+    LDR r1, =biasedExp1
+    LDR r2, =exp1
+    BL getExponent
+    
+    LDR r0, =f2
+    LDR r1, =biasedExp2
+    LDR r2, =exp2
+    BL getExponent
+    
+    LDR r0, =fMax
+    
+    POP {r4-r11, LR}
+    MOV PC, LR
     
     /* YOUR asmFmax CODE ABOVE THIS LINE! ^^^^^^^^^^^^^^^^^^^^^  */
 
