@@ -121,7 +121,20 @@ initVariables:
 .type getSignBit,%function
 getSignBit:
     /* YOUR getSignBit CODE BELOW THIS LINE! Don't forget to push and pop! */
+    PUSH {r4-r11, LR}
+    
+    /* sign bit is stored in the 31st bit of the register. We will extract the bit using bitwise operators */
+    LDR r4, [r0] @this puts the number to be unpacked in r4
+    MOV r5, 0x8000000
+    AND r6, r4, r5 @this puts the value of the sign bit in r6 as the 31st bit
+    CMP r6, 0
+    MOVNE r6, 1 @this puts 1 in r6 if our 31st bit was 1. We don't worry about 0 since the and operation would have produced 0 in r6
 
+    STR r6, [r1]
+    
+    POP {r4-r11, LR}
+    MOV PC, LR
+    
     /* YOUR getSignBit CODE ABOVE THIS LINE! Don't forget to push and pop! */
     
 
