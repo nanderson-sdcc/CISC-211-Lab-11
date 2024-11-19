@@ -299,7 +299,19 @@ asmFmax:
     LDR r1, =mant2
     BL getMantissa
     
-    /* Now we can do a comparison easily */
+    /* Now we can do a comparison easily, since our values are in memory */
+    /* First comparisons involve NaN and infinity. If either is NaN, we branch
+     to our NaN instructions */
+    LDR r0, =f1
+    LDR r1, =f2
+    LDR r2, [r0]
+    LDR r3, [r1]
+    
+    CMP r2, 0xff800000
+    BEQ store_NaN_1
+    CMP r3, 0xff800000
+    BEQ store_NaN_2
+    
     /* Start with the sign bit */
     LDR r0, =sb1
     LDR r1, =sb2
@@ -377,6 +389,54 @@ store_f2:
     STR r3, [r8]
     STR r4, [r9]
     
+    B done
+
+store_NaN_1:
+    /* This directive is for the NaN case if f1 is NaN.*/
+    MOV r0, 0x7FFFFFFF
+    MOV r1, 0
+    MOV r2, 0xFF
+    MOV r3, 0x80
+    MOVW r4, 0xFFFF
+    MOVT r4, 0x007F
+    
+    LDR r5, =fMax
+    LDR r6, =signBitMax
+    LDR r7, =biasedExpMax
+    LDR r8, =expMax
+    LDR r9, =mantMax
+    
+    STR r0, [r5]
+    STR r1, [r6]
+    STR r2, [r7]
+    STR r3, [r8]
+    STR r4, [r9]
+    
+    B done
+    
+store_NaN_2:
+    /* This directive is for the NaN case if f2 is NaN.*/
+    MOV r0, 0x7FFFFFFF
+    MOV r1, 0
+    MOV r2, 0xFF
+    MOV r3, 0x80
+    MOVW r4, 0xFFFF
+    MOVT r4, 0x007F
+    
+    LDR r5, =fMax
+    LDR r6, =signBitMax
+    LDR r7, =biasedExpMax
+    LDR r8, =expMax
+    LDR r9, =mantMax
+    
+    STR r0, [r5]
+    STR r1, [r6]
+    STR r2, [r7]
+    STR r3, [r8]
+    STR r4, [r9]
+    
+    B done
+     
 done:
     LDR r0, =fMax
     
