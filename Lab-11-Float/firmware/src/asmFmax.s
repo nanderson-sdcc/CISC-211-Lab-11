@@ -202,6 +202,19 @@ getMantissa:
     /* YOUR getMantissa CODE BELOW THIS LINE! Don't forget to push and pop! */
     PUSH {r4-r11, LR}
     
+    /* Mantissa is in the lowest 23 bits. We will do the same bitmasking from
+     before to get it. Plus, we will add the implied zero to it */
+    LDR r8, [r0]
+    
+    MOVW r4, 0xFFFF
+    MOVT r4, 0x007F
+    MOV r5, 0x00800000
+    AND r6, r4, r8
+    ORR r7, r6, r5
+     
+    /* Now we store the value */
+    STR r7, [r1]
+    
     POP {r4-r11, LR}
     MOV PC, LR
     /* YOUR getMantissa CODE ABOVE THIS LINE! Don't forget to push and pop! */
@@ -277,6 +290,94 @@ asmFmax:
     LDR r2, =exp2
     BL getExponent
     
+    /* Now the mantissa */
+    LDR r0, =f1
+    LDR r1, =mant1
+    BL getMantissa
+    
+    LDR r0, =f2
+    LDR r1, =mant2
+    BL getMantissa
+    
+    /* Now we can do a comparison easily */
+    /* Start with the sign bit */
+    LDR r0, =sb1
+    LDR r1, =sb2
+    LDR r0, [r0]
+    LDR r1, [r1]
+    CMP r0, r1
+    BHI store_f1
+    BCC store_f2
+    
+    /* Now compare exponent */
+    LDR r0, =biasedExp1
+    LDR r1, =biasedExp2
+    LDR r0, [r0]
+    LDR r1, [r1]
+    BHI store_f1
+    BCC store_f2
+    
+    /* Finally, we compare the mantissa */
+    LDR r0, =mant1
+    LDR r1, =mant2
+    LDR r0, [r0]
+    LDR r1, [r1]
+    BHI store_f1
+    BCC store_f2
+    
+store_f1:
+    /* This function stores the f1 values as the max */
+    LDR r0, =f1
+    LDR r0, [r0]
+    LDR r1, =sb1
+    LDR r1, [r1]
+    LDR r2, =biasedExp1
+    LDR r2, [r2]
+    LDR r3, =exp1
+    LDR r3, [r3]
+    LDR r4, =mant1
+    LDR r4, [r4]
+    
+    LDR r5, =fMax
+    LDR r6, =signBitMax
+    LDR r7, =biasedExpMax
+    LDR r8, =expMax
+    LDR r9, =mantMax
+    
+    STR r0, [r5]
+    STR r1, [r6]
+    STR r2, [r7]
+    STR r3, [r8]
+    STR r4, [r9]
+    
+    B done
+    
+store_f2:
+    /* This function stores the f2 values as the max */
+    LDR r0, =f2
+    LDR r0, [r0]
+    LDR r1, =sb2
+    LDR r1, [r1]
+    LDR r2, =biasedExp2
+    LDR r2, [r2]
+    LDR r3, =exp2
+    LDR r3, [r3]
+    LDR r4, =mant2
+    LDR r4, [r4]
+    
+    LDR r5, =fMax
+    LDR r6, =signBitMax
+    LDR r7, =biasedExpMax
+    LDR r8, =expMax
+    LDR r9, =mantMax
+    
+    STR r0, [r5]
+    STR r1, [r6]
+    STR r2, [r7]
+    STR r3, [r8]
+    STR r4, [r9]
+    
+done:
     LDR r0, =fMax
     
     POP {r4-r11, LR}
