@@ -125,7 +125,7 @@ getSignBit:
     
     /* sign bit is stored in the 31st bit of the register. We will extract the bit using bitwise operators */
     LDR r4, [r0] /*this puts the number to be unpacked in r4*/
-    MOV r5, 0x8000000
+    MOV r5, 0x80000000
     AND r6, r4, r5 /*this puts the value of the sign bit in r6 as the 31st bit */
     CMP r6, 0
     MOVNE r6, 1 /*this puts 1 in r6 if our 31st bit was 1. We don't worry about 0 since the and operation would have produced 0 in r6 */
@@ -276,7 +276,7 @@ asmFmax:
     BL getSignBit
     
     LDR r0, =f2
-    LDR r1, =sb1
+    LDR r1, =sb2
     BL getSignBit
     
     /* Now the get exponent function */
@@ -326,6 +326,7 @@ asmFmax:
     LDR r1, =biasedExp2
     LDR r0, [r0]
     LDR r1, [r1]
+    CMP r0, r1
     BHI store_f1
     BCC store_f2
     
@@ -334,6 +335,7 @@ asmFmax:
     LDR r1, =mant2
     LDR r0, [r0]
     LDR r1, [r1]
+    CMP r0, r1
     BHI store_f1
     BCC store_f2
     
