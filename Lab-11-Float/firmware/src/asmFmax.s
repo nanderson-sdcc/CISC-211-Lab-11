@@ -318,23 +318,56 @@ asmFmax:
     LDR r0, [r0]
     LDR r1, [r1]
     CMP r0, r1
-    BHI store_f1
-    BCC store_f2
+    BHI store_f2 @if r0 is bigger, that means r0 is negative and r1 is positive, so store f2
+    BCC store_f1
     
-    /* Now compare exponent */
+    /* Now compare exponent, but account for the cases where both are positive or negative */
     LDR r0, =biasedExp1
     LDR r1, =biasedExp2
     LDR r0, [r0]
     LDR r1, [r1]
+    
+    LDR r2, =exp1
+    LDR r2, [r2]
+    CMP r2, 0
+    BEQ positive @at this point we know they have the same sign, so we can just check one of them to see which case
+    B negative
+
+positive_exp:
+    /* Positive case */
     CMP r0, r1
     BHI store_f1
     BCC store_f2
+    B mantissa_comparison
+
+negative_exp:
+    /* Negative case */
+    CMP r0, r1,
+    BHI store_f2
+    BCC store_f1
     
-    /* Finally, we compare the mantissa */
+mantissa_comparison:
+    /* Finally, we compare the mantissa. Just like with exponent, we need to consider
+    the positive and negative sign cases, since each has a different comparison criteria. */
     LDR r0, =mant1
     LDR r1, =mant2
     LDR r0, [r0]
     LDR r1, [r1]
+
+    LDR r2, =sb1
+    LDR r2, [r2]
+    CMP r2, 0
+    BEQ positive_mant
+    B negative_mant
+
+negative_mant:
+    /* We know that the signs are negative, so we look for the smaller mantissa. */
+    CMP r0, r1
+    BHI store_f2
+    BCC store_f1
+
+positive_mant:
+    /* We know that the signs are positive, so we look for the bigger mantissa. */
     CMP r0, r1
     BHI store_f1
     BCC store_f2
