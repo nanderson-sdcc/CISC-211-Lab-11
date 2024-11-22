@@ -330,8 +330,8 @@ asmFmax:
     LDR r2, =exp1
     LDR r2, [r2]
     CMP r2, 0
-    BEQ positive @at this point we know they have the same sign, so we can just check one of them to see which case
-    B negative
+    BEQ positive_exp @at this point we know they have the same sign, so we can just check one of them to see which case
+    B negative_exp
 
 positive_exp:
     /* Positive case */
@@ -342,7 +342,7 @@ positive_exp:
 
 negative_exp:
     /* Negative case */
-    CMP r0, r1,
+    CMP r0, r1
     BHI store_f2
     BCC store_f1
     
