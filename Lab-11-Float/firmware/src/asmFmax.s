@@ -307,7 +307,7 @@ asmFmax:
     LDR r2, [r0]
     LDR r3, [r1]
     
-    CMP r2, 0xff800000
+    CMP r2, 0xff800000 @NaN can be represented in more ways than this SO EDIT THIS CODE HERE
     BEQ store_NaN_1
     CMP r3, 0xff800000
     BEQ store_NaN_2
