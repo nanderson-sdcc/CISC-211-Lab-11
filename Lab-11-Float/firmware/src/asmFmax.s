@@ -301,15 +301,52 @@ asmFmax:
     
     /* Now we can do a comparison easily, since our values are in memory */
     /* First comparisons involve NaN and infinity. If either is NaN, we branch
-     to our NaN instructions */
+     to our NaN specific nstructions */
     LDR r0, =f1
     LDR r1, =f2
     LDR r2, [r0]
     LDR r3, [r1]
     
-    CMP r2, 0xff800000 @NaN can be represented in more ways than this SO EDIT THIS CODE HERE
-    BEQ store_NaN_1
+    /* Inifinitey check */
+    CMP r2, 0x7f800000
+    BEQ store_f1
+    CMP r3, 0x7f800000
+    BEQ store_f2
+
+    /* Negative infinitey check */
+    CMP r2, 0xff800000
+    BEQ store_f2
     CMP r3, 0xff800000
+    BEQ store_f1
+
+    /* NaN check. We determine if the exponent field is full (all 1's). If so, we move 1 to r4. Then we check if any mantissa value is 1.
+    If so, we move 1 to r5. Finally, we check if r4 and r5 are 1, and if so, then we have a NaN value. */
+    MOV r4, 0 @this check is for f1
+    MOV r5, 0
+
+    ANDS r6, r2, 0x7f800000
+    CMP r6, 0x7f800000
+    MOVEQ r4, 1
+
+    TST r2, 0x007fffff
+    MOVEQ r5, 1
+
+    ADD r8, r4, r5
+    CMP r8, 2
+    BEQ store_NaN_1
+
+    MOV r4, 0 @this check is for f2
+    MOV r5, 0
+
+    ANDS r6, r3, 0x7f800000
+    CMP r6, 0x7f800000
+    MOVEQ r4, 1
+
+    TST r3, 0x007fffff
+    MOVEQ r5, 1
+
+    ADD r8, r4, r5
+    CMP r8, 2
     BEQ store_NaN_2
     
     /* Start with the sign bit */
