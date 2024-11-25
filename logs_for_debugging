@@ -1118,3 +1118,163 @@ tests failed: 25
 total tests:  84 
 score: 14/20 points 
 
+========= Test Number: 0
+input1:       1.0000e+00; input2:     2.0000e+00 
+hex inp1:     0x3f800000; hex inp2: 0x40000000
+PASS: expected max: 2.0000e+00; asm result: 2.0000e+00
+PASS: pointer check: expected:  0x200009E0; actual: 0x200009E0
+PASS: sign bit expected: 0; actual: 0
+PASS: biased expnt expected:   128; actual: 128
+PASS: unbiased expnt expected: 1; actual: 1
+PASS: mantissa expected: 0x00800000; actual: 0x00800000
+tests passed: 6; tests failed: 0 
+
+========= Test Number: 1
+input1:       -3.1000e+00; input2:     -1.2000e+00 
+hex inp1:     0xc0466666; hex inp2: 0xbf99999a
+PASS: expected max: -1.2000e+00; asm result: -1.2000e+00
+PASS: pointer check: expected:  0x200009E0; actual: 0x200009E0
+PASS: sign bit expected: 1; actual: 1
+PASS: biased expnt expected:   127; actual: 127
+PASS: unbiased expnt expected: 0; actual: 0
+PASS: mantissa expected: 0x0099999a; actual: 0x0099999a
+tests passed: 6; tests failed: 0 
+
+========= Test Number: 2
+input1:            nan; input2:     1.0000e+00 
+hex inp1:     0x7fc00000; hex inp2: 0x3f800000
+FAIL: expected max:      nan; asm result: 1.0000e+00
+PASS: pointer check: expected:  0x200009E0; actual: 0x200009E0
+PASS: sign bit expected: 0; actual: 0
+FAIL: biased expnt expected:   255; actual: 127
+FAIL: unbiased expnt expected: 128; actual: 0
+PASS: mantissa expected: 0x007fffff; actual: 0x00800000
+tests passed: 3; tests failed: 3 
+
+========= Test Number: 3
+input1:       -1.0000e+00; input2:          nan 
+hex inp1:     0xbf800000; hex inp2: 0x7fc00000
+PASS: expected max:      nan; asm result:      nan
+PASS: pointer check: expected:  0x200009E0; actual: 0x200009E0
+PASS: sign bit expected: 0; actual: 0
+PASS: biased expnt expected:   255; actual: 255
+PASS: unbiased expnt expected: 128; actual: 128
+PASS: mantissa expected: 0x007fffff; actual: 0x00c00000
+tests passed: 6; tests failed: 0 
+
+========= Test Number: 4
+input1:       1.0000e-01; input2:     9.9000e-01 
+hex inp1:     0x3dcccccd; hex inp2: 0x3f7d70a4
+FAIL: expected max: 9.9000e-01; asm result: 1.0000e-01
+PASS: pointer check: expected:  0x200009E0; actual: 0x200009E0
+PASS: sign bit expected: 0; actual: 0
+FAIL: biased expnt expected:   126; actual: 123
+FAIL: unbiased expnt expected: -1; actual: -4
+FAIL: mantissa expected: 0x00fd70a4; actual: 0x00cccccd
+tests passed: 2; tests failed: 4 
+
+========= Test Number: 5
+input1:       1.1444e-28; input2:     7.8507e+02 
+hex inp1:     0x11111111; hex inp2: 0x44444444
+FAIL: expected max: 7.8507e+02; asm result: 1.1444e-28
+PASS: pointer check: expected:  0x200009E0; actual: 0x200009E0
+PASS: sign bit expected: 0; actual: 0
+FAIL: biased expnt expected:   136; actual: 34
+FAIL: unbiased expnt expected: 9; actual: -93
+FAIL: mantissa expected: 0x00c44444; actual: 0x00911111
+tests passed: 2; tests failed: 4 
+
+========= Test Number: 6
+input1:       -4.0001e+03; input2:     0.0000e+00 
+hex inp1:     0xc57a019a; hex inp2: 0x00000000
+PASS: expected max: 0.0000e+00; asm result: 0.0000e+00
+PASS: pointer check: expected:  0x200009E0; actual: 0x200009E0
+PASS: sign bit expected: 0; actual: 0
+PASS: biased expnt expected:   0; actual: 0
+FAIL: unbiased expnt expected: -126; actual: -253
+FAIL: mantissa expected: 0x00000000; actual: 0x00800000
+tests passed: 4; tests failed: 2 
+
+========= Test Number: 7
+input1:       -1.9000e-05; input2:     -1.9000e-05 
+hex inp1:     0xb79f6230; hex inp2: 0xb79f6230
+PASS: expected max: -1.9000e-05; asm result: -1.9000e-05
+PASS: pointer check: expected:  0x200009E0; actual: 0x200009E0
+PASS: sign bit expected: 1; actual: 1
+PASS: biased expnt expected:   111; actual: 111
+PASS: unbiased expnt expected: -16; actual: -16
+PASS: mantissa expected: 0x009f6230; actual: 0x009f6230
+tests passed: 6; tests failed: 0 
+
+========= Test Number: 8
+input1:       1.3470e+10; input2:     2.8670e-10 
+hex inp1:     0x5048b7f9; hex inp2: 0x2f9d9d70
+FAIL: expected max: 1.3470e+10; asm result: 2.8670e-10
+PASS: pointer check: expected:  0x200009E0; actual: 0x200009E0
+PASS: sign bit expected: 0; actual: 0
+FAIL: biased expnt expected:   160; actual: 95
+FAIL: unbiased expnt expected: 33; actual: -32
+FAIL: mantissa expected: 0x00c8b7f9; actual: 0x009d9d70
+tests passed: 2; tests failed: 4 
+
+========= Test Number: 9
+input1:       0.0000e+00; input2:     0.0000e+00 
+hex inp1:     0x00000000; hex inp2: 0x80000000
+PASS: expected max: 0.0000e+00; asm result: 0.0000e+00
+PASS: pointer check: expected:  0x200009E0; actual: 0x200009E0
+PASS: sign bit expected: 0; actual: 0
+PASS: biased expnt expected:   0; actual: 0
+FAIL: unbiased expnt expected: -126; actual: -253
+FAIL: mantissa expected: 0x00000000; actual: 0x00800000
+tests passed: 4; tests failed: 2 
+
+========= Test Number: 10
+input1:       0.0000e+00; input2:     2.3130e+29 
+hex inp1:     0x80000000; hex inp2: 0x703ad7b8
+PASS: expected max: 2.3130e+29; asm result: 2.3130e+29
+PASS: pointer check: expected:  0x200009E0; actual: 0x200009E0
+PASS: sign bit expected: 0; actual: 0
+PASS: biased expnt expected:   224; actual: 224
+PASS: unbiased expnt expected: 97; actual: 97
+PASS: mantissa expected: 0x00bad7b8; actual: 0x00bad7b8
+tests passed: 6; tests failed: 0 
+
+========= Test Number: 11
+input1:            inf; input2:         -inf 
+hex inp1:     0x7f800000; hex inp2: 0xff800000
+PASS: expected max:      inf; asm result:      inf
+PASS: pointer check: expected:  0x200009E0; actual: 0x200009E0
+PASS: sign bit expected: 0; actual: 0
+PASS: biased expnt expected:   255; actual: 255
+PASS: unbiased expnt expected: 128; actual: 128
+FAIL: mantissa expected: 0x00000000; actual: 0x00800000
+tests passed: 5; tests failed: 1 
+
+========= Test Number: 12
+input1:           -inf; input2:     -6.2400e+00 
+hex inp1:     0xff800000; hex inp2: 0xc0c7ae14
+PASS: expected max: -6.2400e+00; asm result: -6.2400e+00
+PASS: pointer check: expected:  0x200009E0; actual: 0x200009E0
+PASS: sign bit expected: 1; actual: 1
+PASS: biased expnt expected:   129; actual: 129
+PASS: unbiased expnt expected: 2; actual: 2
+PASS: mantissa expected: 0x00c7ae14; actual: 0x00c7ae14
+tests passed: 6; tests failed: 0 
+
+========= Test Number: 13
+input1:       1.0000e+00; input2:     0.0000e+00 
+hex inp1:     0x3f800000; hex inp2: 0x00000000
+PASS: expected max: 1.0000e+00; asm result: 1.0000e+00
+PASS: pointer check: expected:  0x200009E0; actual: 0x200009E0
+PASS: sign bit expected: 0; actual: 0
+PASS: biased expnt expected:   127; actual: 127
+PASS: unbiased expnt expected: 0; actual: 0
+PASS: mantissa expected: 0x00800000; actual: 0x00800000
+tests passed: 6; tests failed: 0 
+
+========= ALL TESTS COMPLETE!
+tests passed: 64 
+tests failed: 20 
+total tests:  84 
+score: 15/20 points 
+

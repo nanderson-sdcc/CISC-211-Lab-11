@@ -328,7 +328,9 @@ asmFmax:
     CMP r6, 0x7f800000
     MOVEQ r4, 1
 
-    TST r2, 0x007fffff
+    MOVW r9, 0xFFFF
+    MOVT r9, 0x007F
+    TST r2, r9
     MOVEQ r5, 1
 
     ADD r8, r4, r5
@@ -342,7 +344,9 @@ asmFmax:
     CMP r6, 0x7f800000
     MOVEQ r4, 1
 
-    TST r3, 0x007fffff
+    MOVW r9, 0xFFFF
+    MOVT r9, 0x007F
+    TST r3, r9
     MOVEQ r5, 1
 
     ADD r8, r4, r5
