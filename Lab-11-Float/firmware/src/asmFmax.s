@@ -67,6 +67,7 @@ initVariables:
     /* YOUR initVariables CODE BELOW THIS LINE! Don't forget to push and pop! */
     PUSH {r4-r11, LR}
 
+    /* Very simple function. We set all the values in memory to 0*/
     MOV r4, 0
     
     LDR r5, =f1
@@ -126,7 +127,7 @@ getSignBit:
     /* sign bit is stored in the 31st bit of the register. We will extract the bit using bitwise operators */
     LDR r4, [r0] /*this puts the number to be unpacked in r4*/
     MOV r5, 0x80000000
-    AND r6, r4, r5 /*this puts the value of the sign bit in r6 as the 31st bit */
+    AND r6, r4, r5 /*this puts the value of the sign bit in r6 as its 31st bit */
     CMP r6, 0
     MOVNE r6, 1 /*this puts 1 in r6 if our 31st bit was 1. We don't worry about 0 since the and operation would have produced 0 in r6 */
 
@@ -174,9 +175,12 @@ getExponent:
     /*At this point, we have our biased exponent in r6. We can load it into 
      memory, and also subtract the bias to get our unbiased value */
     STR r6, [r1]
+    
+    /* Subtraction of bias. Note that we don't subtract the bias
+    if the exponent was 0. We simply use -126 if so. */
     CMP r6, 0
     MOVEQ r6, -126
-    SUB r6, r6, 127
+    SUBNE r6, r6, 127
     STR r6, [r2]
     
     POP {r4-r11, LR}
@@ -203,7 +207,7 @@ getMantissa:
     PUSH {r4-r11, LR}
     
     /* Mantissa is in the lowest 23 bits. We will do the same bitmasking from
-     before to get it. Plus, we will add the implied zero to it */
+     before to get it. Plus, we will add the implied 1 to it. */
     LDR r8, [r0]
     
     MOVW r4, 0xFFFF
@@ -211,8 +215,22 @@ getMantissa:
     MOV r5, 0x00800000
     AND r6, r4, r8
     ORR r7, r6, r5
+    
+    /* We check if the value is 0, since its mantissa
+     doesn't have the implied 1. If that is the case, we simply return
+     0 as the mantissa in r7 */
+    CMP r8, 0
+    MOVEQ r7, 0
+    
+    /* Another special case if for inf and -inf. In either case
+     we want the mantissa to be zero*/
+    CMP r8, 0x7f800000
+    MOVEQ r7, 0
+    CMP r8, 0xff800000
+    MOVEQ r7, 0
      
-    /* Now we store the value */
+    /* Now we store the value of the mantissa, which is in r7,
+    to memory */
     STR r7, [r1]
     
     POP {r4-r11, LR}
@@ -324,20 +342,21 @@ asmFmax:
     MOV r4, 0 @this check is for f1
     MOV r5, 0
 
-    ANDS r6, r2, 0x7f800000
+    ANDS r6, r2, 0x7f800000 /*check if the exponent is all 1's */
     CMP r6, 0x7f800000
     MOVEQ r4, 1
 
-    MOVW r9, 0xFFFF
+    MOVW r9, 0xFFFF /* check if the mantissa has any 1's at all */
     MOVT r9, 0x007F
-    TST r2, r9
-    MOVEQ r5, 1
+    AND r10, r2, r9
+    CMP r10, 0
+    MOVHI r5, 1
 
     ADD r8, r4, r5
     CMP r8, 2
     BEQ store_NaN_1
 
-    MOV r4, 0 @this check is for f2
+    MOV r4, 0 /*this check is for f2, same idea as with f1*/
     MOV r5, 0
 
     ANDS r6, r3, 0x7f800000
@@ -346,8 +365,9 @@ asmFmax:
 
     MOVW r9, 0xFFFF
     MOVT r9, 0x007F
-    TST r3, r9
-    MOVEQ r5, 1
+    AND r10, r2, r9
+    CMP r10, 0
+    MOVHI r5, 1
 
     ADD r8, r4, r5
     CMP r8, 2
@@ -363,26 +383,29 @@ asmFmax:
     BCC store_f1
     
     /* Now compare exponent, but account for the cases where both are positive or negative */
+    /* Gather the exponents in r0 and r1*/
     LDR r0, =biasedExp1
     LDR r1, =biasedExp2
     LDR r0, [r0]
     LDR r1, [r1]
     
-    LDR r2, =exp1
+    /* We know the signs are the same, so just check one of them. 
+     Depending on the sign, we do different comparisons of the exponent */
+    LDR r2, =sb1
     LDR r2, [r2]
     CMP r2, 0
-    BEQ positive_exp @at this point we know they have the same sign, so we can just check one of them to see which case
+    BEQ positive_exp
     B negative_exp
 
 positive_exp:
-    /* Positive case */
+    /* We know the signs are positive, so we look for the bigger exponent. */
     CMP r0, r1
     BHI store_f1
     BCC store_f2
     B mantissa_comparison
 
 negative_exp:
-    /* Negative case */
+    /* We know the signs are negative, so we look for the smaller exponent. */
     CMP r0, r1
     BHI store_f2
     BCC store_f1
